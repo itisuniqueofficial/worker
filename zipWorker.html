@@ -1,1 +1,257 @@
-<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0"><title>Zip Worker</title><link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/itisuniqueofficial/worker@main/worker.css"></head><body><header><h1>Zip Worker File Download</h1></header><div class="download-container"><p>Enter the password to enable the download:</p><input type="password" id="passwordInput" placeholder="Enter password"><button id="downloadButton" onclick="revealDownloadLink()" disabled>Download Now</button><p id="statusMessage"></p><div id="progressContainer" style="display:none;"><progress id="downloadProgress" value="0" max="100"></progress><span id="progressPercentage">0%</span></div></div><footer><p>Copyright &copy; 2024 It Is Unique Official. All rights reserved.</p></footer><script src="zipWorker.js"></script></body></html>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Zip Worker</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: 'Courier New', Courier, monospace;
+            background: black;
+            color: #00ff00;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            padding: 20px;
+        }
+        h1 {
+            font-size: 36px;
+            margin-bottom: 20px;
+            text-shadow: 0 0 10px #00ff00;
+            text-align: center;
+        }
+        .download-container {
+            text-align: center;
+            padding: 20px;
+            border: 2px dashed #00ff00;
+            border-radius: 10px;
+            width: 100%;
+            max-width: 400px;
+            background: rgba(0, 0, 0, 0.8);
+        }
+        .download-container button {
+            margin-top: 20px;
+            margin-bottom: 20px;
+            background: transparent;
+            color: #00ff00;
+            border: 2px solid #00ff00;
+            padding: 10px 20px;
+            font-size: 18px;
+            cursor: pointer;
+            border-radius: 5px;
+            transition: background 0.3s, color 0.3s, transform 0.2s;
+            width: 100%;
+        }
+        .download-container button:hover {
+            background: #00ff00;
+            color: black;
+            transform: scale(1.05);
+        }
+        .download-container button.enabled {
+            background: #00ff00;
+            color: black;
+        }
+        .download-container input[type="password"] {
+            margin-top: 20px;
+            padding: 10px;
+            border: 2px solid #00ff00;
+            background: black;
+            color: #00ff00;
+            border-radius: 5px;
+            font-size: 16px;
+            text-align: center;
+            width: 100%;
+        }
+        .download-container p {
+            margin-bottom: 10px;
+            font-size: 14px;
+            opacity: 0.9;
+        }
+        #progressContainer {
+            margin-top: 20px;
+            text-align: center;
+        }
+        progress {
+            width: 100%;
+            height: 20px;
+            margin-top: 10px;
+            appearance: none;
+            -webkit-appearance: none;
+            background-color: black;
+            border: 2px solid #00ff00;
+            border-radius: 5px;
+        }
+        progress::-webkit-progress-bar {
+            background-color: black;
+        }
+        progress::-webkit-progress-value {
+            background-color: #00ff00;
+        }
+        progress::-moz-progress-bar {
+            background-color: #00ff00;
+        }
+        #progressPercentage {
+            display: block;
+            margin-top: 5px;
+            font-size: 14px;
+            color: #00ff00;
+        }
+        footer {
+            margin-top: 30px;
+            font-size: 14px;
+            text-align: center;
+            color: #00ff00;
+            opacity: 0.8;
+        }
+        @media (max-width: 768px) {
+            h1 {
+                font-size: 28px;
+            }
+            .download-container {
+                padding: 15px;
+            }
+            .download-container button {
+                font-size: 16px;
+                padding: 8px 16px;
+            }
+            .download-container input[type="password"] {
+                font-size: 14px;
+                padding: 8px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>Zip Worker File Download</h1>
+    </header>
+    <div class="download-container">
+        <p>Enter the password to enable the download:</p>
+        <input type="password" id="passwordInput" placeholder="Enter password">
+        <button id="downloadButton" onclick="revealDownloadLink()" disabled>Download Now</button>
+        <p id="statusMessage"></p>
+        <div id="progressContainer" style="display: none;">
+            <progress id="downloadProgress" value="0" max="100"></progress>
+            <span id="progressPercentage">0%</span>
+        </div>
+    </div>
+    <footer>
+        <p>Copyright &copy; 2024 It Is Unique Official. All rights reserved.</p>
+    </footer>
+    <script>
+        const correctPassword = "secure123"; // Set your password here
+
+        function getFileNameFromUrl() {
+            const urlParams = new URLSearchParams(window.location.search);
+            const encodedFileName = urlParams.get('file');
+            if (encodedFileName) {
+                try {
+                    const decodedFileName = atob(encodedFileName); // Decode the base64 file name
+                    return decodedFileName;
+                } catch (e) {
+                    console.error("Error decoding file name:", e);
+                    return null;
+                }
+            }
+            return null;
+        }
+
+        function fetchFileDataWithProgress(fileName, onProgress) {
+            return new Promise((resolve, reject) => {
+                const xhr = new XMLHttpRequest();
+                xhr.open('GET', `/zip/${fileName}`, true); // Replace with your actual server path
+                xhr.responseType = 'blob';
+
+                xhr.onprogress = function (event) {
+                    if (event.lengthComputable) {
+                        const percentComplete = (event.loaded / event.total) * 100;
+                        onProgress(percentComplete);
+                    }
+                };
+
+                xhr.onload = function () {
+                    if (xhr.status === 200) {
+                        resolve(xhr.response);
+                    } else {
+                        reject(new Error(`Failed to fetch file. Status: ${xhr.status}`));
+                    }
+                };
+
+                xhr.onerror = function () {
+                    reject(new Error("Error during file fetch"));
+                };
+
+                xhr.send();
+            });
+        }
+
+        function revealDownloadLink() {
+            const passwordInput = document.getElementById('passwordInput').value;
+            const statusMessage = document.getElementById('statusMessage');
+            const progressContainer = document.getElementById('progressContainer');
+            const progressBar = document.getElementById('downloadProgress');
+            const progressPercentage = document.getElementById('progressPercentage');
+
+            if (passwordInput === correctPassword) {
+                const fileName = getFileNameFromUrl();
+                if (fileName) {
+                    statusMessage.textContent = `Password accepted. Preparing download for ${fileName}...`;
+                    statusMessage.style.color = "#00ff00";
+
+                    progressContainer.style.display = "block";
+
+                    fetchFileDataWithProgress(fileName, (progress) => {
+                        progressBar.value = progress;
+                        progressPercentage.textContent = `${Math.round(progress)}%`;
+                    })
+                        .then(blob => {
+                            progressContainer.style.display = "none";
+
+                            const url = URL.createObjectURL(blob);
+
+                            const hiddenLink = document.createElement('a');
+                            hiddenLink.href = url;
+                            hiddenLink.download = fileName;
+                            hiddenLink.style.display = 'none';
+                            document.body.appendChild(hiddenLink);
+
+                            hiddenLink.click();
+                            document.body.removeChild(hiddenLink);
+
+                            URL.revokeObjectURL(url);
+                        })
+                        .catch(err => {
+                            statusMessage.textContent = "Error fetching the file. Please try again later.";
+                            statusMessage.style.color = "red";
+                        });
+                } else {
+                    statusMessage.textContent = "Invalid file name parameter. Please check the URL.";
+                    statusMessage.style.color = "red";
+                }
+            } else {
+                statusMessage.textContent = "Incorrect password. Please try again.";
+                statusMessage.style.color = "red";
+            }
+        }
+
+        document.getElementById('passwordInput').addEventListener('input', function () {
+            const passwordInput = this.value;
+            const downloadButton = document.getElementById('downloadButton');
+            if (passwordInput === correctPassword) {
+                downloadButton.disabled = false;
+                downloadButton.classList.add('enabled');
+            } else {
+                downloadButton.disabled = true;
+                downloadButton.classList.remove('enabled');
+            }
+        });
+    </script>
+</body>
+</html>
