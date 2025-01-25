@@ -16,7 +16,7 @@ function getFileNameFromUrl() {
 function fetchFileDataWithProgress(fileName, onProgress) {
     return new Promise((resolve, reject) => {
         const xhr = new XMLHttpRequest();
-        xhr.open('GET', `zip/${fileName}`, true);
+        xhr.open('GET', `/zip/${fileName}`, true);
         xhr.responseType = 'blob';
 
         xhr.onprogress = event => {
