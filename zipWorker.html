@@ -1,1 +1,38 @@
-<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0"><title>Zip Worker</title><link rel="stylesheet" href="worker.css"></head><body><header><h1>Zip Worker File Download</h1></header><div class="download-container"><p>Enter the password to enable the download:</p><input type="password" id="passwordInput" placeholder="Enter password"><button id="downloadButton" onclick="revealDownloadLink()" disabled>Download Now</button><p id="statusMessage"></p><div id="progressContainer" style="display:none;"><progress id="downloadProgress" value="0" max="100"></progress><span id="progressPercentage">0%</span></div></div><footer><p>Copyright &copy; 2024 It Is Unique Official. All rights reserved.</p></footer><script src="zipWorker.js"></script></body></html>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="robots" content="noindex, nofollow">
+  <title>Zip Worker</title>
+  <link rel="stylesheet" href="worker.css">
+</head>
+<body>
+  <header>
+    <h1>Zip Worker File Download</h1>
+  </header>
+  <div class="download-container">
+    <p style="font-weight: bold; color: red;">Warning: Ensure you have the correct password before attempting to download the file.</p>
+    <p>Enter the password to enable the download:</p>
+    <input type="password" id="passwordInput" placeholder="Enter password">
+    <button id="downloadButton" onclick="revealDownloadLink()" disabled>Download Now</button>
+    <p id="statusMessage" style="color: red; font-style: italic;"></p>
+    <div id="progressContainer" style="display:none; margin-top: 10px;">
+      <progress id="downloadProgress" value="0" max="100"></progress>
+      <span id="progressPercentage" style="margin-left: 10px;">0%</span>
+    </div>
+  </div>
+  <div style="margin-top: 20px; padding: 10px; background-color: #f9f9f9; border: 1px solid #ccc;">
+    <p><strong>Note:</strong> Download links are active for a limited time only. Please complete your download promptly.</p>
+    <ul style="list-style-type: square; padding-left: 20px;">
+      <li>Ensure your internet connection is stable before starting the download.</li>
+      <li>Contact support at <a href="mailto:itisuniqueofficial@gmail.com">itisuniqueofficial@gmail.com</a> for any issues.</li>
+      <li>Downloads are encrypted for your security.</li>
+    </ul>
+  </div>
+  <footer>
+    <p style="text-align: center; margin-top: 20px; color: #555;">Copyright &copy; 2024 It Is Unique Official. All rights reserved.</p>
+  </footer>
+  <script src="zipWorker.js"></script>
+</body>
+</html>
